@@ -7,6 +7,7 @@ import numpy as np
 
 # project dependencies
 from deepface.commons import weight_utils
+from deepface.commons import package_utils
 from deepface.commons.logger import Logger
 
 logger = Logger()
@@ -24,6 +25,14 @@ class Fasnet:
     """
 
     def __init__(self):
+        # Check if using tensorflow-rocm
+        if package_utils.is_tensorflow_rocm():
+            raise NotImplementedError(
+                "FasNet face anti-spoofing is not supported with tensorflow-rocm "
+                "as it requires PyTorch. Please use alternative face detection methods "
+                "like OpenCV, RetinaFace, or MTCNN."
+            )
+        
         # pytorch is an opitonal dependency, enforce it to be installed if class imported
         try:
             import torch

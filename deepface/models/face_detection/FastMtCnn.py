@@ -7,6 +7,7 @@ import numpy as np
 
 # project dependencies
 from deepface.models.Detector import Detector, FacialAreaRegion
+from deepface.commons import package_utils
 
 
 class FastMtCnnClient(Detector):
@@ -65,6 +66,14 @@ class FastMtCnnClient(Detector):
         Returns:
             model (Any)
         """
+        # Check if using tensorflow-rocm
+        if package_utils.is_tensorflow_rocm():
+            raise NotImplementedError(
+                "FastMTCNN face detection is not supported with tensorflow-rocm "
+                "as it requires PyTorch. Please use alternative face detection methods "
+                "like OpenCV, RetinaFace, or MTCNN (the TensorFlow version)."
+            )
+        
         # this is not a must dependency. do not import it in the global level.
         try:
             from facenet_pytorch import MTCNN as fast_mtcnn

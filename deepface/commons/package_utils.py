@@ -1,5 +1,6 @@
 # built-in dependencies
 import hashlib
+import sys
 
 # 3rd party dependencies
 import tensorflow as tf
@@ -47,6 +48,23 @@ def validate_for_keras3():
             "tf-keras package. Please run `pip install tf-keras` "
             "or downgrade your tensorflow."
         ) from err
+
+
+def is_tensorflow_rocm() -> bool:
+    """
+    Check if the installed tensorflow is tensorflow-rocm
+    Returns:
+        is_rocm (bool): True if tensorflow-rocm is installed
+    """
+    # Check if tensorflow-rocm is in installed packages
+    try:
+        import pkg_resources
+        installed_packages = [pkg.key for pkg in pkg_resources.working_set]
+        return 'tensorflow-rocm' in installed_packages
+    except Exception:
+        # Fallback: check if tensorflow module path contains rocm
+        tf_path = tf.__file__ if hasattr(tf, '__file__') else ""
+        return 'rocm' in tf_path.lower()
 
 
 def find_file_hash(file_path: str, hash_algorithm: str = "sha256") -> str:
